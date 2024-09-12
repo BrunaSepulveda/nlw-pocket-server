@@ -11,6 +11,7 @@ import {
   count,
   sql,
   eq,
+  lt,
 } from "drizzle-orm";
 
 export interface CreateGoal {
@@ -105,11 +106,19 @@ export default class GoalsService {
           goalsCreatedUpToWeek.title,
         desiredWeeklyFrequency:
           goalsCreatedUpToWeek.desiredWeeklyFrequency,
-        completionCount: sql`
+        completionCount: sql/*sql*/ `
           COALESCE(${goalCompletionCounts.completionCount}, 0)
         `.mapWith(Number),
       })
       .from(goalsCreatedUpToWeek)
+      .where(
+        lt(
+          sql/*sql*/ `
+        COALESCE(${goalCompletionCounts.completionCount}, 0)
+      `.mapWith(Number),
+          goalsCreatedUpToWeek.desiredWeeklyFrequency
+        )
+      )
       .leftJoin(
         goalCompletionCounts,
         eq(

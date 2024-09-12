@@ -64,7 +64,7 @@ export default class GoalsCompletionsService {
       );
   }
 
-  private static async getPropiesToCompare(
+  private static async getPropertiesToCompare(
     params: GoalCompletionCountsParams
   ): Promise<{
     desiredWeeklyFrequency: number;
@@ -80,7 +80,7 @@ export default class GoalsCompletionsService {
       .select({
         desiredWeeklyFrequency:
           goals.desiredWeeklyFrequency,
-        completionCount: sql/*sql*/ `
+        completionCount: sql`
         COALESCE(${goalCompletionCounts.completionCount}, 0)
       `.mapWith(Number),
       })
@@ -114,7 +114,7 @@ export default class GoalsCompletionsService {
       completionCount,
       desiredWeeklyFrequency,
     } =
-      await GoalsCompletionsService.getPropiesToCompare(
+      await GoalsCompletionsService.getPropertiesToCompare(
         {
           firstDayOfWeek,
           goalId,

@@ -7,6 +7,7 @@ import {
 
 import GoalsController from "../controllers/goals.controller.ts";
 import GoalsCompletionsController from "../controllers/goalsCompletions.controller.ts";
+import SummaryController from "../controllers/summary.controller.ts";
 
 export const app =
   fastify().withTypeProvider<ZodTypeProvider>();
@@ -20,6 +21,7 @@ app.setSerializerCompiler(
 
 new GoalsController(app);
 new GoalsCompletionsController(app);
+new SummaryController(app);
 
 app.listen(
   { port: 3333 },
