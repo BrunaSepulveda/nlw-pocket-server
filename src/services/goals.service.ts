@@ -38,15 +38,10 @@ export default class GoalsService {
     };
   }
 
-  static async getWeekPendingGoals() {
-    const firstDayOfWeek = dayjs()
-      .startOf("week")
-      .toDate();
-    const lastDayOfWeek = dayjs()
-      .endOf("week")
-      .toDate();
-
-    const goalsCreatedUpToWeek = db
+  public static goalsCreatedUpToWeek(
+    lastDayOfWeek: Date
+  ) {
+    return db
       .$with("goals_created_up_to_week")
       .as(
         db
@@ -64,6 +59,20 @@ export default class GoalsService {
               lastDayOfWeek
             )
           )
+      );
+  }
+
+  static async getWeekPendingGoals() {
+    const firstDayOfWeek = dayjs()
+      .startOf("week")
+      .toDate();
+    const lastDayOfWeek = dayjs()
+      .endOf("week")
+      .toDate();
+
+    const goalsCreatedUpToWeek =
+      GoalsService.goalsCreatedUpToWeek(
+        lastDayOfWeek
       );
 
     const goalCompletionCounts = db

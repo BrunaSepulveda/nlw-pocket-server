@@ -143,4 +143,79 @@ export default class GoalsCompletionsService {
       goalCompletion,
     };
   }
+
+  public static goalsCompletedInWeek(params: {
+    firstDayOfWeek: Date;
+    lastDayOfWeek: Date;
+  }) {
+    return db
+      .$with("goals_completed_in_week")
+      .as(
+        db
+          .select({
+            id: goalsCompletions.id,
+            title: goals.title,
+            completedAt:
+              goalsCompletions.createdAt,
+            completedAtDate:
+              sql/*sql*/ `
+          DATE(${goalsCompletions.createdAt})
+        `.as("completedAtDate"),
+          })
+          .from(goalsCompletions)
+          .innerJoin(
+            goals,
+            eq(
+              goals.id,
+              goalsCompletions.goalId
+            )
+          )
+          .where(
+            and(
+              gte(
+                goalsCompletions.createdAt,
+                params.firstDayOfWeek
+              ),
+              lte(
+                goalsCompletions.createdAt,
+                params.lastDayOfWeek
+              )
+            )
+          )
+      );
+  }
+
+  public static goalsCompletedByWeekDay(params: {
+    firstDayOfWeek: Date;
+    lastDayOfWeek: Date;
+  }) {
+    const goalsCompletedInWeek =
+      GoalsCompletionsService.goalsCompletedInWeek(
+        params
+      );
+    return db
+      .$with(
+        "goals_completed_by_week_day"
+      )
+      .as(
+        db
+          .select({
+            completedAtDate:
+              goalsCompletedInWeek.completedAtDate,
+            completions: sql/*sql*/ `
+          JSON_AGG(
+            JSON_BUILD_OBJECT(
+              'id', ${goalsCompletedInWeek.id},
+              'title', ${goalsCompletedInWeek.title},
+              'completedAt', ${goalsCompletedInWeek.completedAt}
+            )
+          )
+        `.as("completions"),
+          })
+          .from(goalsCompletedInWeek)
+          .groupBy(
+            goalsCompletedInWeek.completedAtDate
+          )
+      );
+  }
 }
