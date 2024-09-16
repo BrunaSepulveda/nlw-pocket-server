@@ -3,10 +3,10 @@ import GoalsService from "./goals.service.ts";
 import { db } from "../db/index.ts";
 import GoalsCompletionsService from "./goalsCompletions.service.ts";
 import { sql } from "drizzle-orm";
+import { Summary } from "../types/index.ts";
 
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export default class SummaryService {
-  public static async getWeekSummary() {
+  public static async getWeekSummary(): Promise<Summary> {
     const firstDayOfWeek = dayjs()
       .startOf("week")
       .toDate();
@@ -60,7 +60,7 @@ export default class SummaryService {
       .from(goalsCompletedByWeekDay);
 
     return {
-      summary: result,
-    };
+      summary: result[0],
+    } as Summary;
   }
 }

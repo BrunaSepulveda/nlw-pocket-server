@@ -1,13 +1,12 @@
 import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
-import GoalsService, {
-  type CreateGoal,
-} from "../services/goals.service.ts";
+import GoalsService from "../services/goals.service.ts";
 import type {
   FastifyInstance,
   FastifyRequest,
   FastifyReply,
 } from "fastify";
+import { CreateGoalParams } from "../types/index.ts";
 
 export default class GoalsController {
   private route: string;
@@ -48,7 +47,7 @@ export default class GoalsController {
 
   private async post(
     request: FastifyRequest<{
-      Body: CreateGoal;
+      Body: CreateGoalParams;
     }>,
     reply: FastifyReply
   ) {

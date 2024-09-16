@@ -1,4 +1,4 @@
-import type {
+import {
   FastifyInstance,
   FastifyRequest,
   FastifyReply,
@@ -28,6 +28,17 @@ export default class GoalsCompletionsController {
       },
       handler: this.post.bind(this),
     });
+
+    this.app.route({
+      method: "DELETE",
+      url: this.route,
+      schema: {
+        body: z.object({
+          id: z.string(),
+        }),
+      },
+      handler: this.delete.bind(this),
+    });
   }
 
   private async post(
@@ -46,6 +57,32 @@ export default class GoalsCompletionsController {
       reply
         .code(StatusCodes.CREATED)
         .send(result);
+    } catch (error) {
+      reply
+        .code(StatusCodes.BAD_REQUEST)
+        .send({
+          error: "Invalid request",
+          message: (error as Error)
+            .message,
+        });
+    }
+  }
+
+  private async delete(
+    request: FastifyRequest<{
+      Body: { id: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const body = request.body;
+      await GoalsCompletionsService.delete(
+        body
+      );
+
+      reply
+        .code(StatusCodes.NO_CONTENT)
+        .send();
     } catch (error) {
       reply
         .code(StatusCodes.BAD_REQUEST)

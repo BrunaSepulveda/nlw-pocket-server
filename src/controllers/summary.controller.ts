@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
-import GoalsService, {
-  type CreateGoal,
-} from "../services/goals.service.ts";
-import type {
+import {
   FastifyInstance,
   FastifyRequest,
   FastifyReply,

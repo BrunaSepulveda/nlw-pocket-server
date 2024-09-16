@@ -11,20 +11,17 @@ import {
   count,
   sql,
   eq,
-  lt,
 } from "drizzle-orm";
+import {
+  CreateGoalParams,
+  PendingGoal,
+} from "../types/index.ts";
 
-export interface CreateGoal {
-  title: string;
-  desiredWeeklyFrequency: number;
-}
-
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export default class GoalsService {
   static async createGoal({
     desiredWeeklyFrequency,
     title,
-  }: CreateGoal) {
+  }: CreateGoalParams) {
     const result = await db
       .insert(goals)
       .values({
@@ -62,7 +59,11 @@ export default class GoalsService {
       );
   }
 
-  static async getWeekPendingGoals() {
+  static async getWeekPendingGoals(): Promise<{
+    pendingGoals: Promise<
+      PendingGoal[]
+    >;
+  }> {
     const firstDayOfWeek = dayjs()
       .startOf("week")
       .toDate();
@@ -120,14 +121,6 @@ export default class GoalsService {
         `.mapWith(Number),
       })
       .from(goalsCreatedUpToWeek)
-      .where(
-        lt(
-          sql/*sql*/ `
-        COALESCE(${goalCompletionCounts.completionCount}, 0)
-      `.mapWith(Number),
-          goalsCreatedUpToWeek.desiredWeeklyFrequency
-        )
-      )
       .leftJoin(
         goalCompletionCounts,
         eq(
@@ -136,6 +129,12 @@ export default class GoalsService {
         )
       );
 
-    return { pendingGoals };
+    return {
+      pendingGoals,
+    } as unknown as {
+      pendingGoals: Promise<
+        PendingGoal[]
+      >;
+    };
   }
 }

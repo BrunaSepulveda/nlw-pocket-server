@@ -12,18 +12,13 @@ import {
   goals,
   goalsCompletions,
 } from "../db/schema.ts";
+import {
+  CreateGoalCompletionRequest,
+  GoalCompletion,
+  GoalCompletionCountsParams,
+  GoalCompletionPropertiesToCompare,
+} from "../types/index.ts";
 
-interface CreateGoalCompletionRequest {
-  goalId: string;
-}
-
-interface GoalCompletionCountsParams
-  extends CreateGoalCompletionRequest {
-  firstDayOfWeek: Date;
-  lastDayOfWeek: Date;
-}
-
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export default class GoalsCompletionsService {
   private static goalCompletionCounts({
     goalId,
@@ -66,10 +61,7 @@ export default class GoalsCompletionsService {
 
   private static async getPropertiesToCompare(
     params: GoalCompletionCountsParams
-  ): Promise<{
-    desiredWeeklyFrequency: number;
-    completionCount: number;
-  }> {
+  ): Promise<GoalCompletionPropertiesToCompare> {
     const goalCompletionCounts =
       GoalsCompletionsService.goalCompletionCounts(
         params
@@ -102,7 +94,9 @@ export default class GoalsCompletionsService {
 
   public static async createGoalCompletion({
     goalId,
-  }: CreateGoalCompletionRequest) {
+  }: CreateGoalCompletionRequest): Promise<{
+    goalCompletion: GoalCompletion;
+  }> {
     const firstDayOfWeek = dayjs()
       .startOf("week")
       .toDate();
@@ -136,7 +130,7 @@ export default class GoalsCompletionsService {
       .values({ goalId })
       .returning();
 
-    const goalCompletion =
+    const goalCompletion: GoalCompletion =
       insertResult[0];
 
     return {
@@ -216,6 +210,18 @@ export default class GoalsCompletionsService {
           .groupBy(
             goalsCompletedInWeek.completedAtDate
           )
+      );
+  }
+
+  public static async delete({
+    id,
+  }: {
+    id: string;
+  }) {
+    await db
+      .delete(goalsCompletions)
+      .where(
+        eq(goalsCompletions.id, id)
       );
   }
 }
