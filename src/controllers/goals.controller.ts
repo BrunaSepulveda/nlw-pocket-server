@@ -1,74 +1,55 @@
-import { z } from "zod";
-import { StatusCodes } from "http-status-codes";
-import GoalsService from "../services/goals.service.ts";
-import type {
-  FastifyInstance,
-  FastifyRequest,
-  FastifyReply,
-} from "fastify";
-import { CreateGoalParams } from "../types/index.ts";
+import { z } from 'zod'
+import { StatusCodes } from 'http-status-codes'
+import GoalsService from '../services/goals.service'
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import { CreateGoalParams } from '../types/index'
 
 export default class GoalsController {
-  private route: string;
-  private app: FastifyInstance;
+  private route: string
+  private app: FastifyInstance
 
   constructor(app: FastifyInstance) {
-    this.route = "/goals";
-    this.app = app;
-    this.registerRoutes();
+    this.route = '/goals'
+    this.app = app
+    this.registerRoutes()
   }
 
   private registerRoutes() {
     this.app.route({
-      method: "POST",
+      method: 'POST',
       url: this.route,
       schema: {
         body: z.object({
           title: z.string(),
-          desiredWeeklyFrequency: z
-            .number()
-            .int()
-            .min(1)
-            .max(7),
+          desiredWeeklyFrequency: z.number().int().min(1).max(7),
         }),
       },
       handler: this.post.bind(this),
-    });
+    })
 
     this.app.route({
-      method: "GET",
+      method: 'GET',
       url: `${this.route}/pending-goals`,
-      handler:
-        this.getWeekPendingGoals.bind(
-          this
-        ),
-    });
+      handler: this.getWeekPendingGoals.bind(this),
+    })
   }
 
   private async post(
     request: FastifyRequest<{
-      Body: CreateGoalParams;
+      Body: CreateGoalParams
     }>,
     reply: FastifyReply
   ) {
     try {
-      const body = request.body;
-      const result =
-        await GoalsService.createGoal(
-          body
-        );
+      const body = request.body
+      const result = await GoalsService.createGoal(body)
 
-      reply
-        .code(StatusCodes.CREATED)
-        .send(result);
+      reply.code(StatusCodes.CREATED).send(result)
     } catch (error) {
-      reply
-        .code(StatusCodes.BAD_REQUEST)
-        .send({
-          error: "Invalid request",
-          message: (error as Error)
-            .message,
-        });
+      reply.code(StatusCodes.BAD_REQUEST).send({
+        error: 'Invalid request',
+        message: (error as Error).message,
+      })
     }
   }
 
@@ -77,20 +58,14 @@ export default class GoalsController {
     reply: FastifyReply
   ) {
     try {
-      const result =
-        await GoalsService.getWeekPendingGoals();
+      const result = await GoalsService.getWeekPendingGoals()
 
-      reply
-        .code(StatusCodes.OK)
-        .send(result);
+      reply.code(StatusCodes.OK).send(result)
     } catch (error) {
-      reply
-        .code(StatusCodes.BAD_REQUEST)
-        .send({
-          error: "Invalid request",
-          message: (error as Error)
-            .message,
-        });
+      reply.code(StatusCodes.BAD_REQUEST).send({
+        error: 'Invalid request',
+        message: (error as Error).message,
+      })
     }
   }
 }

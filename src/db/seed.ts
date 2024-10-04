@@ -1,43 +1,37 @@
-import dayjs from "dayjs";
-import { client, db } from "./index.ts";
-import {
-  goals,
-  goalsCompletions,
-} from "./schema.ts";
+import dayjs from 'dayjs'
+import { client, db } from './index'
+import { goals, goalsCompletions } from './schema'
 
 async function seed() {
-  await db.delete(goalsCompletions);
-  await db.delete(goals);
+  await db.delete(goalsCompletions)
+  await db.delete(goals)
 
   const result = await db
     .insert(goals)
     .values([
       {
-        title: "Acordar cedo",
+        title: 'Acordar cedo',
         desiredWeeklyFrequency: 5,
       },
       {
-        title: "Exercitar",
+        title: 'Exercitar',
         desiredWeeklyFrequency: 3,
       },
       {
-        title: "Meditar",
+        title: 'Meditar',
         desiredWeeklyFrequency: 1,
       },
     ])
-    .returning();
+    .returning()
 
-  const startOfWeek =
-    dayjs().startOf("week");
+  const startOfWeek = dayjs().startOf('week')
 
-  await db
-    .insert(goalsCompletions)
-    .values([
-      {
-        goalId: result[2].id,
-        createdAt: startOfWeek.toDate(),
-      },
-    ]);
+  await db.insert(goalsCompletions).values([
+    {
+      goalId: result[2].id,
+      createdAt: startOfWeek.toDate(),
+    },
+  ])
 }
 
-seed().finally(() => client.end());
+seed().finally(() => client.end())
