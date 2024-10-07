@@ -8,5 +8,4 @@ export const client = postgres(
 )
 export const db = drizzle(client, {
   schema,
-  logger: true,
 })

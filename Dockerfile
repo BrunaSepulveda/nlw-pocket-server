@@ -19,5 +19,16 @@ RUN npm run build
 # Exponha a porta que sua aplicação usa
 EXPOSE 3333
 
+ENV DB_HOST=${DB_HOST}
+ENV DB_USER=${DB_USER}
+ENV DB_PASSWORD=${DB_PASSWORD}
+ENV DB_NAME=${DB_NAME}
+ENV DB_PORT=${DB_PORT}
+ENV DB_TYPE=${DB_TYPE}
+
+# Copy Drizzle ORM dependencies (adjust if needed)
+COPY node_modules/drizzle-orm/postgres-js ./node_modules/drizzle-orm/postgres-js
+COPY node_modules/postgres/ ./node_modules/postgres
+
 # Comando para rodar a aplicação
 CMD ["node", "dist/src/http/server.js"]
