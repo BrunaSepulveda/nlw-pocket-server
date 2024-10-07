@@ -2,7 +2,6 @@ FROM node:latest AS builder
 
 WORKDIR /app
 
-# Declare as variáveis como argumentos de build
 ARG DB_USER
 ARG DB_PASSWORD
 ARG DB_NAME
@@ -10,7 +9,6 @@ ARG DB_TYPE
 ARG DB_HOST
 ARG DB_PORT
 
-# Use as variáveis para configurar as variáveis de ambiente
 ENV DATABASE_URL="${DB_TYPE}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
 COPY package*.json ./
@@ -20,9 +18,13 @@ RUN npm install
 
 COPY . .
 
-# Usa a variável de ambiente no comando de build
-RUN npm run drizzle:m && npm run seed && npm run build
+# Copia o script de espera pelo PostgreSQL
+COPY wait-for-postgres.sh ./
+RUN chmod +x wait-for-postgres.sh
+
+RUN npm run build
 
 EXPOSE 3333
 
-CMD ["sh", "-c", "echo $DATABASE_URL && node dist/src/http/server.js"]
+# Espera o PostgreSQL ficar disponível antes de rodar as migrações e iniciar o servidor
+CMD ["./wait-for-postgres.sh", "npx drizzle-kit migrate && npm run seed && node dist/src/http/server.js"]
