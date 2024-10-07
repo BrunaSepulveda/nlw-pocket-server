@@ -3,12 +3,13 @@ FROM node:latest AS builder
 WORKDIR /app
 
 COPY package*.json ./
+COPY drizzle.config.json ./
 
-RUN npm install && npm run drizzle migrate
+RUN npm install
 
 COPY . .
 
-RUN npm run seed && npm run build
+RUN npm run drizzle:m && npm run seed && npm run build
 
 EXPOSE 3333
 
