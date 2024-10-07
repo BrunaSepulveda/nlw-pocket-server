@@ -1,10 +1,18 @@
-FROM node:latest
+FROM node:latest AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
 
 RUN npm install
+
+COPY . .
+
+FROM node:alpine AS slim
+
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
 
 COPY . .
 
