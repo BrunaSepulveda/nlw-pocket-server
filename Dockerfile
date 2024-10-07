@@ -1,30 +1,22 @@
-FROM node:latest AS builder
+# Use uma imagem base do Node.js
+FROM node:18-alpine
 
+# Defina o diretório de trabalho
 WORKDIR /app
 
-ARG DB_USER
-ARG DB_PASSWORD
-ARG DB_NAME
-ARG DB_TYPE
-ARG DB_HOST
-ARG DB_PORT
-
-ENV DATABASE_URL="${DB_TYPE}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
-
+# Copie os arquivos package.json e package-lock.json para o contêiner
 COPY package*.json ./
-COPY drizzle.config.ts ./
 
-RUN npm install
+# Instale as dependências
+RUN npm install && npx drizzle-kit migrate
 
+# Copie todos os arquivos para o diretório de trabalho
 COPY . .
 
-# Copia o script de espera pelo PostgreSQL
-COPY wait-for-postgres.sh ./
-RUN chmod +x wait-for-postgres.sh
-
+# Compile o TypeScript para JavaScript (caso esteja usando TypeScript)
 RUN npm run build
 
+# Exponha a porta que sua aplicação usa
 EXPOSE 3333
 
-# Espera o PostgreSQL ficar disponível antes de rodar as migrações e iniciar o servidor
-CMD ["./wait-for-postgres.sh", "npx drizzle-kit migrate && npm run seed && node dist/src/http/server.js"]
+CMD ["node", "dist/src/http/server.js"]
