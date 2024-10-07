@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3333
 
 # Comando para rodar a aplicação
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/http/server.js"]
