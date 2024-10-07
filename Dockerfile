@@ -3,7 +3,7 @@ FROM node:latest AS builder
 WORKDIR /app
 
 COPY package*.json ./
-COPY drizzle.config.json ./
+COPY drizzle.config.ts ./
 
 RUN npm install
 
