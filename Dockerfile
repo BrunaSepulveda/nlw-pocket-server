@@ -5,7 +5,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copie os arquivos package.json e package-lock.json para o contêiner
-COPY package*.json ./
+COPY . .
 
 # Instale as dependências
 RUN npm install && npx drizzle-kit migrate
