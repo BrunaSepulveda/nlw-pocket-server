@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "node --env-file .env dist/src/http/server.js",
+    "start": "node dist/src/http/server.js",
     "dev": "tsx watch --env-file .env src/http/server",
     "seed": "tsx --env-file .env src/db/seed",
     "lint": "npx @biomejs/biome format --write ./src",
