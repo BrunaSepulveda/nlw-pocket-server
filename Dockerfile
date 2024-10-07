@@ -4,19 +4,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install && npm run drizzle migrate
 
 COPY . .
 
-FROM node:alpine AS slim
-
-WORKDIR /app
-
-COPY --from=builder /app/node_modules ./node_modules
-
-COPY . .
-
-RUN npm run drizzle:m && npm run seed && npm run build
+RUN npm run seed && npm run build
 
 EXPOSE 3333
 
