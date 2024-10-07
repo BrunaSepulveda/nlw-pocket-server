@@ -10,7 +10,7 @@ ARG DB_TYPE
 ARG DB_HOST
 ARG DB_PORT
 
-# Passa os argumentos como variáveis de ambiente no contêiner
+# Use as variáveis para configurar as variáveis de ambiente
 ENV DATABASE_URL="${DB_TYPE}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
 COPY package*.json ./
@@ -25,4 +25,4 @@ RUN npm run drizzle:m && npm run seed && npm run build
 
 EXPOSE 3333
 
-CMD ["node", "dist/src/http/server.js"]
+CMD ["sh", "-c", "echo $DATABASE_URL && node dist/src/http/server.js"]
