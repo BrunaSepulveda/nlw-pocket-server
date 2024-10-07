@@ -26,9 +26,4 @@ ENV DB_NAME=${DB_NAME}
 ENV DB_PORT=${DB_PORT}
 ENV DB_TYPE=${DB_TYPE}
 
-# Copy Drizzle ORM dependencies (adjust if needed)
-COPY node_modules/drizzle-orm/postgres-js ./node_modules/drizzle-orm/postgres-js
-COPY node_modules/postgres/ ./node_modules/postgres
-
-# Comando para rodar a aplicação
 CMD ["node", "dist/src/http/server.js"]
