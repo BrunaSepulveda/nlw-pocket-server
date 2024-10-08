@@ -1,26 +1,8 @@
-# Use uma imagem base do Node.js
-FROM node:18-alpine
-
-# Defina o diretório de trabalho
+FROM node:latest
 WORKDIR /app
-
-# Copie os arquivos package.json e package-lock.json para o contêiner
 COPY package*.json ./
-
-# Instale as dependências
-RUN npm install
-
-# Copie o restante dos arquivos para o contêiner
+RUN npm install && npx drizzle-kit migrate 
 COPY . .
-
-# Instale o dotenv-cli para garantir que as variáveis de ambiente sejam carregadas corretamente
-RUN npm install && npx drizzle-kit migrate
-
-# Compile o TypeScript para JavaScript
 RUN npm run build
-
-# Exponha a porta que sua aplicação usa
 EXPOSE 3333
-
-# Execute o servidor
 CMD ["node", "dist/src/http/server.js"]

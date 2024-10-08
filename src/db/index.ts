@@ -4,7 +4,7 @@ import * as schema from './schema'
 import { env } from '../env'
 
 export const client = postgres(
-  `${process.env.DB_TYPE}://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+  `${env.DB_TYPE}://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`
 )
 export const db = drizzle(client, {
   schema,
