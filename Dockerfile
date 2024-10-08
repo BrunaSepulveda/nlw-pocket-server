@@ -1,7 +1,7 @@
 FROM node:latest
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install && npm run drizzle:m
 COPY . .
 RUN npm run build
 EXPOSE 3333
