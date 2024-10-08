@@ -1,6 +1,6 @@
 FROM node:latest
 WORKDIR /app
-COPY package*.json ./
+COPY . .
 RUN npm install && npx drizzle-kit migrate 
 COPY . .
 RUN npm run build
