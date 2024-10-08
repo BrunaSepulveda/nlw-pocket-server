@@ -1,8 +1,23 @@
+# Use a imagem base do Node.js
 FROM node:latest
+
+# Defina o diretório de trabalho
 WORKDIR /app
+
+# Copie o package.json e o package-lock.json primeiro para otimizar o cache de dependências
 COPY package*.json ./
-RUN npm install && npm run drizzle:m
+
+# Instale as dependências
+RUN npm install
+
+# Copie todos os arquivos do projeto para o contêiner
 COPY . .
-RUN npm run build
+
+# Dê permissão de execução ao script entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+# Exponha a porta usada pela aplicação
 EXPOSE 3333
-CMD ["node", "dist/src/http/server.js"]
+
+# Comando para iniciar o script de entrada
+CMD ["sh", "entrypoint.sh"]
