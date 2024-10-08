@@ -3,6 +3,8 @@ WORKDIR /app
 COPY . .
 RUN npm install 
 COPY . .
-RUN npm run build && npx drizzle-kit migrate
+RUN npm run build
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 EXPOSE 3333
-CMD ["node", "dist/src/http/server.js"]
+CMD ["sh", "/app/entrypoint.sh"]
